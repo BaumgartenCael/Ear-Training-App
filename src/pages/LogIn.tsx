@@ -18,7 +18,7 @@ function LogIn() {
 
             if (res.status === 200) {
                 console.log("Login Successful");
-                navigate('/');
+                navigate('/home');
             } else {
                 const data = await res.json();
                 console.log("Login failed:", data.message);
