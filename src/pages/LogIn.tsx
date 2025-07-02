@@ -1,31 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './SignUp.css'
 
 
-
-function SignUp() {
+function LogIn() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault(); // prevent page refresh
-        if (confirmPassword != password) {
-            console.log("Please confirm password");
-            return;
-        } 
         try {
-            const res = await fetch('http://localhost:5000/api/signup', {
+            const res = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
             });
 
-            if (res.status === 201) {
-                console.log("Signup Successful");
+            if (res.status === 200) {
+                console.log("Login Successful");
                 navigate('/');
+            } else {
+                const data = await res.json();
+                console.log("Login failed:", data.message);
             }
         } 
         catch (error) {
@@ -34,7 +30,7 @@ function SignUp() {
         }
         console.log('Username:', username);
         console.log('Password:', password);
-
+    
       };
 
 
@@ -54,17 +50,10 @@ function SignUp() {
         onChange={(e)=>setPassword(e.target.value)}
         required
         />
-        <input
-        type="password"
-        value={confirmPassword}
-        placeholder="Confirm Password"
-        onChange={(e)=>setConfirmPassword(e.target.value)}
-        required
-        />
-        <button type="submit">Sign Up</button>
+        <button type="submit">Log In</button>
     </form>
   );
 };
 
-export default SignUp
+export default LogIn;
 
