@@ -7,9 +7,11 @@ interface NavButtonProps {
 
 const NavButton: React.FC<NavButtonProps> = ({ to, label }) => {
     return (
+        <nav className="navButton">
         <Link to={to}>
             <button>{label}</button>
         </Link>
+        </nav>
     );
 }
 

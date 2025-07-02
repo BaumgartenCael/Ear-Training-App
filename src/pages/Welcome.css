@@ -1,0 +1,23 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+
+#welcomeButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+#welcomeButtons button {
+  border-radius: 40px;
+  width: 200px;
+}
+
+#welcomeText {
+  font-size: 100px;
+}
+
