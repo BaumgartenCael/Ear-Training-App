@@ -5,6 +5,7 @@ import Practice from './pages/Practice';
 import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
 import NavBar from './components/NavBar';
+import Intervals from './pages/Intervals';
 
 function App() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function App() {
         <Route path="/practice" element={<Practice />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
+        <Route path="/intervals" element={<Intervals />} />
       </Routes>
     </>
   )
