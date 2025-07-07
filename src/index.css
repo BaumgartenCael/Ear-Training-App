@@ -44,16 +44,16 @@ button {
   font-family: inherit;
   background-color: #c2b9ef;
   cursor: pointer;
-  transition: border-color 0.25s;
+  /* transition: border-color 0.25s; */
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
 }
 button:hover {
   background-color: #646cff;
 }
-button:focus,
+/* button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
 @media (prefers-color-scheme: light) {
   :root {

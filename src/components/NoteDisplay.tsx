@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import './NoteDisplay.css';
-// import { Link } from 'react-router-dom';
-import { Factory, Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
+import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
 
-
-const NoteDisplay: React.FC = () => {
+interface NoteDisplayProps {
+    note1: string,
+    note2: string,
+    chord: boolean,
+}
+const NoteDisplay: React.FC<NoteDisplayProps> = ({note1, note2, chord}) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -15,21 +17,27 @@ const NoteDisplay: React.FC = () => {
         renderer.resize(1000, 1000);
         const context = renderer.getContext();
 
-        const stave = new Stave(10, 40, 125);
-
-        // stave.addClef("treble").addTimeSignature("4/4");
+        const staveWidth = chord ? 80: 127
+        const stave = new Stave(10, 40, staveWidth);
         context.scale(2, 2);
 
         stave.addClef("treble");
         stave.setContext(context).draw();
-
-        const notes = [
-            new StaveNote({ keys: ["f/4"], duration: "w"}),
-            new StaveNote({ keys: ["c/5"], duration: "w"}),
-        ]
-        const voice = new Voice({numBeats: 2, beatValue: 1});
+        let notes, voice;
+        if (chord) {
+            notes = [
+                new StaveNote({ keys: [note1, note2], duration: "w"}),
+            ]
+            voice = new Voice({numBeats: 1, beatValue: 1});
+        }
+        else {
+            notes = [
+                new StaveNote({ keys: [note1], duration: "w"}),
+                new StaveNote({ keys: [note2], duration: "w"}),
+            ]  
+            voice = new Voice({numBeats: 2, beatValue: 1});
+        }
         voice.addTickables(notes);
-
         new Formatter().joinVoices([voice]).format([voice], 80);
 
         voice.draw(context, stave);
