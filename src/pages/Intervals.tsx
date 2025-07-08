@@ -4,16 +4,18 @@ import NoteDisplay from '.././components/NoteDisplay';
 import IntervalButton from '.././components/IntervalButton';
 import { useState, useRef, useEffect } from 'react';
 
-const NUM_QUESTIONS = 5;
+const NUM_QUESTIONS = 7;
+let chord = false;
 
 function Intervals() {
   type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
   const [note1, setNote1] = useState<Note>('c/4');
   const [note2, setNote2] = useState<Note>('d/4');
   const [correctInterval, setCorrectInterval] = useState<number>();
-  const [questionNumber, setQuestionNumber] = useState<number>(1);
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [firstGuess, setFirstGuess] =useState<boolean>(true);
+  const [started, setStarted] = useState<boolean>(false);
 
   const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
   const noteAudio: Record<Note, string> = {
@@ -55,13 +57,32 @@ function Intervals() {
 
 
   function PlayNotes() {
-    // console.log(note1, note2)
     let audio1 = new Audio(noteAudio[note1]);
     let audio2 = new Audio(noteAudio[note2]);
-    audio1.onended = () => {
+
+    // Play notes at the same time if chord mode active
+    if (chord) {
+      audio1.play();
       audio2.play();
-    };
-    audio1.play();
+    }
+
+    // Play notes separately otherwise
+    else {
+      audio1.onended = () => {
+        audio2.play();
+      };
+      audio1.play();
+    }
+  }
+
+  // Helper function to reset everything/begin another practice
+  function Start(isChord: boolean) {
+    chord = isChord;
+    setQuestionNumber(0);
+    setStarted(true);
+    setNumCorrect(0);
+    GetRandomNotes(all_notes);
+    PlayNotes();
   }
 
   function HandleGuess(guess: number) {
@@ -83,20 +104,39 @@ function Intervals() {
     setFirstGuess(true);
   }, [questionNumber]);
 
+  // Return a start button by default, display everything else when clicked
+  if (!started) {
+    return (
+      <>
+      <h1>Intervals</h1>
+      <h2>How do you want to practice?</h2>
+      <button onClick={() => {
+          Start(false);
+        }}>Play the notes separately</button>
+      <button onClick={() => {
+          Start(true);
+        }}>Play the notes together</button>
+        </>
+    )
+  }
+
   return (
     <>  
-        {questionNumber > NUM_QUESTIONS ? (
-          <h1>You got {numCorrect}/{NUM_QUESTIONS}!</h1>
+      <h1>Intervals</h1>
+        {questionNumber >= NUM_QUESTIONS ? (
+          <>
+            <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
+            <button onClick={() => {
+              Start(false);
+            }}>Practice more melodies?</button>
+            <button onClick={() => {
+              Start(true);
+            }}>Practice more chords?</button>
+          </>
         ) : (
-          <ScoreDisplay questionNumber={questionNumber} />
-        )}
-
-        <h1>Intervals</h1>
-        <button onClick={() => {
-          GetRandomNotes(all_notes);
-          PlayNotes();
-        }}/>
-        <div className="answerChoices">
+          <>
+          <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+          <div className="answerChoices">
           {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
           .map((interval, index) => (
             <IntervalButton 
@@ -106,6 +146,20 @@ function Intervals() {
             />
           ))}
         </div>
+          </>
+        )}
+
+        {/* <h1>Intervals</h1>
+        <div className="answerChoices">
+          {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
+          .map((interval, index) => (
+            <IntervalButton 
+              key = {interval}
+              interval = {interval}
+              onClick = {() => HandleGuess(index+1)}
+            />
+          ))}
+        </div> */}
     </>
   )
 }
