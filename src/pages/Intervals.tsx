@@ -3,8 +3,9 @@ import ScoreDisplay from '.././components/ScoreDisplay';
 import NoteDisplay from '.././components/NoteDisplay';
 import IntervalButton from '.././components/IntervalButton';
 import { useState, useRef, useEffect } from 'react';
+import { UpdateStreak } from '.././lib/updateStreak';
 
-const NUM_QUESTIONS = 7;
+const NUM_QUESTIONS = 2;
 let chord = false;
 
 function Intervals() {
@@ -16,6 +17,7 @@ function Intervals() {
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [firstGuess, setFirstGuess] =useState<boolean>(true);
   const [started, setStarted] = useState<boolean>(false);
+  const [shouldUpdate, setShouldUpdate] = useState<boolean>(true);
 
   const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
   const noteAudio: Record<Note, string> = {
@@ -100,9 +102,15 @@ function Intervals() {
     }
   }
 
+
   useEffect(() => {
     setFirstGuess(true);
-  }, [questionNumber]);
+    if (questionNumber === NUM_QUESTIONS && shouldUpdate) {
+      console.log("Should update!");
+      UpdateStreak();
+      setShouldUpdate(false);
+    }
+  }, [questionNumber, shouldUpdate]);
 
   // Return a start button by default, display everything else when clicked
   if (!started) {

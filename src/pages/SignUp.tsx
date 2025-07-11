@@ -25,7 +25,7 @@ function SignUp() {
 
             if (res.status === 201) {
                 console.log("Signup Successful");
-                navigate('/home');
+                navigate('/login');
             }
         } 
         catch (error) {

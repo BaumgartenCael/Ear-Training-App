@@ -44,6 +44,9 @@ router.post('/login', async (req, res) => {
         if (!checkPassword) {
             return res.status(401).json({ message: 'Incorrect username or password.' });
         }
+        console.log("Session now: ", req.session);
+        req.session.userId = existingUser._id;
+        console.log("UserID: ", req.session.userId);
         res.status(200).json({message: "Logged in successfully!"});
     }
 
@@ -52,5 +55,21 @@ router.post('/login', async (req, res) => {
         res.status(500).json({message: "Something went wrong!"});
     }
 })
+
+router.post('/updateStreak', async (req, res) => {
+    try {
+        console.log("Session: ", req.session);
+        console.log("Session id", req.session.userId);
+        await User.updateOne(
+        {_id: req.session.userId },
+        {$inc: {streak: 1}},)
+        res.status(200).json({message: 'Streak updated successfully'});
+        }
+    catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Error updating score." });
+    }
+});
+
 
 export default router;
