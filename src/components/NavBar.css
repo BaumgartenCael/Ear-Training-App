@@ -1,6 +1,6 @@
 #navBar {
     text-align: center;
-    position: fixed;
+    position: absolute;
     display: flex;
     top: -5px;
     left: 50%;

@@ -1,6 +1,18 @@
-/* #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-} */
+#practice-buttons {
+  display: flex;
+  gap: 90px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#practice-buttons .navButton {
+  background-color: #5d15d8;
+  width: 100px;
+  border-radius: 20px;
+  border: 1.5px none #ecedff;
+}
+
+#practice-buttons .navButton:hover {
+  background-color: #5726ac;
+}

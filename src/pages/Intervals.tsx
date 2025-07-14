@@ -3,7 +3,7 @@ import ScoreDisplay from '.././components/ScoreDisplay';
 import NoteDisplay from '.././components/NoteDisplay';
 import IntervalButton from '.././components/IntervalButton';
 import { useState, useRef, useEffect } from 'react';
-import { UpdateStreak } from '.././lib/updateStreak';
+import { UpdateStreak } from '../lib/streak';
 
 const NUM_QUESTIONS = 2;
 let chord = false;

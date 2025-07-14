@@ -71,5 +71,21 @@ router.post('/updateStreak', async (req, res) => {
     }
 });
 
+router.get('/getStreak', async (req, res) => {
+    try {
+        console.log("Attempting to get streak: ", req.session.userId);
+        const currentUser = await User.findOne({_id: req.session.userId});
+        if (!currentUser) {
+            return res.status(404).json({ message: "User not found." });
+        }
+        console.log(" Found user!")
+        res.json({streak: currentUser.streak});
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Error fetching score."});
+    }
+})
+
 
 export default router;
