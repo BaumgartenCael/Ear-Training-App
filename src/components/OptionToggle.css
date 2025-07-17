@@ -1,0 +1,36 @@
+.option-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* position: fixed; */
+  padding: 5px;
+  gap: 10px;
+  border: 2px solid black;
+  border-radius: 20px;
+  height: 35px;
+  width: 100%;
+  background-color: #c2b9ef;
+  font: bold;
+}
+
+.option-toggle p {
+  justify-self: center;
+  text-align: center;
+  width: 100%;
+}
+
+#toggle-button {
+  background-color: transparent;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+}
+
+#toggle-button:hover {
+  background-color: #a9a1d2;
+}
+
+#toggle-button.on {
+  background-color: green;
+}
