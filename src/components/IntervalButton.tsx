@@ -1,3 +1,4 @@
+import './IntervalButton.css'
 interface IntervalButtonProps {
     interval: string,
     onClick: () => void,

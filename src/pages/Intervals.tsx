@@ -5,8 +5,7 @@ import IntervalButton from '.././components/IntervalButton';
 import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
 import OptionToggle from '.././components/OptionToggle'
-const NUM_QUESTIONS = 2;
-// let chord = false;
+const NUM_QUESTIONS = 6;
 
 function Intervals() {
   type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
@@ -20,8 +19,8 @@ function Intervals() {
   const [shouldUpdate, setShouldUpdate] = useState<boolean>(true);
   const [multipleOctaves, setMultipleOctaves] = useState<boolean>(false);
   const [chord, setChord] = useState<boolean>(false);
-  const [justAscending, setJustAscending] = useState<boolean>(false);
-  const [justDescending, setJustDescending] = useState<boolean>(false);
+  const [justAscending, setJustAscending] = useState<boolean>(true);
+  const [justDescending, setJustDescending] = useState<boolean>(true);
 
   const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
   const noteAudio: Record<Note, string> = {
@@ -45,17 +44,32 @@ function Intervals() {
     let shuffledNotes = [...notes].sort(() => Math.random() - 0.5);
 
     // Need to make variables to use them later in the function
-    const newNote1 = shuffledNotes[0];
-    const newNote2 = shuffledNotes[1];
+    let newNote1 = shuffledNotes[0];
+    let newNote2 = shuffledNotes[1];
+    let index1 = all_notes.indexOf(newNote1);
+    let index2 = all_notes.indexOf(newNote2);
+
+    // If the user wants ascending notes and the first note is higher, swap the notes
+    if (!justDescending) {
+      if (index1 > index2) {
+        [newNote1, newNote2] = [newNote2, newNote1];
+      }
+    }
+
+    // Same for descending
+    else if (!justAscending) {
+      if (index1 < index2) {
+        [newNote1, newNote2] = [newNote2, newNote1];
+      }
+    }
+
     console.log(newNote1, newNote2);
     setNote1(newNote1);
     setNote2(newNote2);
     console.log(note1, note2);
 
     // Calculate difference between indices to set correct interval
-    const index1 = all_notes.indexOf(newNote1);
     console.log("index 1: ", index1)
-    const index2 = all_notes.indexOf(newNote2);
     console.log("index 2: ", index2)
     const interval = Math.abs(index1 - index2);
     setCorrectInterval(interval);
@@ -83,6 +97,10 @@ function Intervals() {
 
   // Helper function to reset everything/begin another practice
   function Start() {
+    if (!justAscending && !justDescending) {
+      console.log("Please select ascending, descending, or both");
+      return;
+    }
     setQuestionNumber(0);
     setStarted(true);
     setNumCorrect(0);
@@ -128,12 +146,7 @@ function Intervals() {
         <OptionToggle isOn={justAscending} text="Ascending notes?" toggle={setJustAscending}></OptionToggle>
         <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle>
       </div>
-      <button onClick={() => {
-          Start();
-        }}>Play the notes separately</button>
-      <button onClick={() => {
-          Start();
-        }}>Play the notes together</button>
+      <button id="start-button" onClick={()=>Start()}>Let's go!</button>
         </>
     )
   }
