@@ -8,7 +8,7 @@ function LogIn() {
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // prevent page refresh
+        e.preventDefault(); 
         try {
             const res = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',

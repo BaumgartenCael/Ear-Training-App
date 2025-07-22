@@ -1,9 +1,11 @@
 import './Intervals.css';
 import ScoreDisplay from '.././components/ScoreDisplay';
 import NoteDisplay from '.././components/NoteDisplay';
-import IntervalButton from '.././components/IntervalButton';
+import AnswerButton from '../components/AnswerButton';
+import PlayAgain from '../components/PlayAgain';
 import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
+import { PlayOneNote, PlayTwoNotes, PlayChord } from '../lib/playNotes';
 import OptionToggle from '.././components/OptionToggle'
 const NUM_QUESTIONS = 6;
 
@@ -21,6 +23,9 @@ function Intervals() {
   const [chord, setChord] = useState<boolean>(false);
   const [justAscending, setJustAscending] = useState<boolean>(true);
   const [justDescending, setJustDescending] = useState<boolean>(true);
+
+  const noteRef1 = useRef<Note>('c/4');
+  const noteRef2 = useRef<Note>('d/4');
 
   const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
   const noteAudio: Record<Note, string> = {
@@ -63,10 +68,12 @@ function Intervals() {
       }
     }
 
-    console.log(newNote1, newNote2);
+    console.log("Local notes: ", newNote1, newNote2);
     setNote1(newNote1);
+    noteRef1.current = newNote1;
     setNote2(newNote2);
-    console.log(note1, note2);
+    noteRef2.current = newNote2;
+    console.log("Stored notes: ", noteRef1.current, noteRef2.current);
 
     // Calculate difference between indices to set correct interval
     console.log("index 1: ", index1)
@@ -75,25 +82,6 @@ function Intervals() {
     setCorrectInterval(interval);
   }
 
-
-  function PlayNotes() {
-    let audio1 = new Audio(noteAudio[note1]);
-    let audio2 = new Audio(noteAudio[note2]);
-
-    // Play notes at the same time if chord mode active
-    if (chord) {
-      audio1.play();
-      audio2.play();
-    }
-
-    // Play notes separately otherwise
-    else {
-      audio1.onended = () => {
-        audio2.play();
-      };
-      audio1.play();
-    }
-  }
 
   // Helper function to reset everything/begin another practice
   function Start() {
@@ -105,14 +93,15 @@ function Intervals() {
     setStarted(true);
     setNumCorrect(0);
     GetRandomNotes(all_notes);
-    PlayNotes();
+    chord? PlayChord([noteRef1.current, noteRef2.current]) : PlayTwoNotes(noteRef1.current, noteRef2.current);
   }
+
 
   function HandleGuess(guess: number) {
     console.log(guess);
     if (guess === correctInterval) {
       GetRandomNotes(all_notes);
-      PlayNotes();
+      chord? PlayChord([noteRef1.current, noteRef2.current]) : PlayTwoNotes(noteRef1.current, noteRef2.current);
       setQuestionNumber(questionNumber+1);
       if (firstGuess) {
         setNumCorrect(numCorrect+1);
@@ -167,12 +156,13 @@ function Intervals() {
         ) : (
           <>
           <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+          <PlayAgain notes={[noteRef1.current, noteRef2.current]} interval={!chord} chord={chord} />
           <div className="answerChoices">
           {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
           .map((interval, index) => (
-            <IntervalButton 
+            <AnswerButton 
               key = {interval}
-              interval = {interval}
+              answer = {interval}
               onClick = {() => HandleGuess(index+1)}
             />
           ))}
@@ -180,17 +170,7 @@ function Intervals() {
           </>
         )}
 
-        {/* <h1>Intervals</h1>
-        <div className="answerChoices">
-          {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
-          .map((interval, index) => (
-            <IntervalButton 
-              key = {interval}
-              interval = {interval}
-              onClick = {() => HandleGuess(index+1)}
-            />
-          ))}
-        </div> */}
+        {}
     </>
   )
 }

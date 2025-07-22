@@ -20,6 +20,7 @@ function Home() {
         <div id="practice-buttons">
           <NavButton to="/intervals" label="Intervals" streak={streak}/>
           <NavButton to="/intervals" label="Chords" streak={streak}/>
+          <NavButton to="/pitch" label="Pitch" streak={streak}/>
         </div>
     </>
   )
