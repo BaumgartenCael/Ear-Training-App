@@ -32,6 +32,7 @@ export async function PlayTwoNotes(note1: Note, note2: Note) {
 }
 
 export async function PlayChord(notes: Note[]) {
+    console.log("Chord: ", notes);
     for (let i = 0; i < notes.length; i++) {
         let newAudio = new Audio(noteAudio[notes[i]]);
         newAudio.play();

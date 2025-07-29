@@ -7,6 +7,7 @@ import LogIn from './pages/LogIn';
 import Pitch from './pages/Pitch'
 import NavBar from './components/NavBar';
 import Intervals from './pages/Intervals';
+import Chords from './pages/Chords';
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login" element={<LogIn />} />
         <Route path="/intervals" element={<Intervals />} />
         <Route path="/pitch" element={<Pitch/>} />
+        <Route path="/chords" element={<Chords/>} />
       </Routes>
     </>
   )
