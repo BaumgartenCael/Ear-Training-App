@@ -1,3 +1,4 @@
+import './PlayAgain.css';
 import { PlayOneNote, PlayTwoNotes, PlayChord } from "../lib/playNotes";
 import type { Note } from '../lib/playNotes';
 
@@ -21,9 +22,7 @@ const PlayAgain: React.FC<PlayAgainProps> = ({ notes, interval, chord }) => {
         }
     }
     return (
-        <div>
-            <button onClick={Play}>Repeat Sound</button>
-        </div>
+        <button id="play-again" onClick={Play}>Repeat Sound</button>
     );
 }
 

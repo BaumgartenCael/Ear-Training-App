@@ -1,0 +1,9 @@
+#play-again {
+  border: 2px solid black;
+  background-color: #c2b9ef;
+  padding: 3px;
+  height:70px;
+  width:70px;
+  border-radius: 10px;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+}   

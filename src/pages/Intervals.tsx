@@ -126,17 +126,17 @@ function Intervals() {
   // Return a start button by default, display everything else when clicked
   if (!started) {
     return (
-      <>
-      <h1>Intervals</h1>
-      <h2>How do you want to practice?</h2>
-      <div id="toggle-container">
-        <OptionToggle isOn={multipleOctaves} text="Multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
-        <OptionToggle isOn={chord} text="Play notes simultaneously?" toggle={setChord}></OptionToggle>
-        <OptionToggle isOn={justAscending} text="Ascending notes?" toggle={setJustAscending}></OptionToggle>
-        <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle>
+      <div id="param-screen">
+        <h1>Intervals</h1>
+        <h2>How do you want to practice?</h2>
+        <div id="toggle-container">
+          <OptionToggle isOn={multipleOctaves} text="Multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
+          <OptionToggle isOn={chord} text="Play notes simultaneously?" toggle={setChord}></OptionToggle>
+          <OptionToggle isOn={justAscending} text="Ascending notes?" toggle={setJustAscending}></OptionToggle>
+          <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle>
+        </div>
+        <button id="start-button" onClick={()=>Start()}>Let's go!</button>
       </div>
-      <button id="start-button" onClick={()=>Start()}>Let's go!</button>
-        </>
     )
   }
 

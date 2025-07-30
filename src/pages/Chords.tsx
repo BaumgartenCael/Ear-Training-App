@@ -5,7 +5,7 @@ import AnswerButton from '../components/AnswerButton';
 import PlayAgain from '../components/PlayAgain';
 import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
-import { PlayOneNote, PlayTwoNotes, PlayChord } from '../lib/playNotes';
+import {  PlayChord } from '../lib/playNotes';
 import OptionToggle from '../components/OptionToggle'
 const NUM_QUESTIONS = 6;
 
@@ -117,9 +117,9 @@ function Chords() {
   }
 
 
-  function HandleGuess(guess: string) {
+  function HandleGuess(guess: any, answer: any) {
     console.log(guess);
-    if (guess === correctChord) {
+    if (guess === answer) {
       GetRandomChord(all_notes);
       PlayChord(chordRef.current);
       setQuestionNumber(questionNumber+1);
@@ -178,12 +178,16 @@ function Chords() {
           <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
           <PlayAgain notes={chordRef.current} interval={false} chord={true} />
           <div className="answerChoices">
+            <div id="class-types">
+              {/* <AnswerButton answer = "Minor" onClick = {() => HandleGuess(note)} />
+              <AnswerButton answer = "Diminished" onClick = {() => HandleGuess(note)} /> */}
+            </div>
           {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5']
           .map((note) => (
             <AnswerButton 
               key = {note}
               answer = {noteString[note as Note]}
-              onClick = {() => HandleGuess(note)}
+              onClick = {() => HandleGuess(note, correctChord)}
             />
           ))}
         </div>

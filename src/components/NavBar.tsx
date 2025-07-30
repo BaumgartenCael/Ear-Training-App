@@ -3,7 +3,7 @@ import './NavBar.css'
 
 const NavBar: React.FC = ({}) => {
     return (
-        <nav id="navBar">
+        <nav id="navbar-container">
             <NavButton to="/" label="Sign Out"/>
             <NavButton to="/home" label="Home"/>
             <NavButton to="/home" label="Extra"/>
