@@ -19,7 +19,8 @@ function Home() {
         <h1>Ear Training App</h1>
         <div id="practice-buttons">
           <NavButton to="/intervals" label="Intervals" streak={streak}/>
-          <NavButton to="/intervals" label="Chords" streak={streak}/>
+          <NavButton to="/chords" label="Chords" streak={streak}/>
+          <NavButton to="/pitch" label="Pitch" streak={streak}/>
         </div>
     </>
   )
