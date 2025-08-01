@@ -10,6 +10,9 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  background-color: #5726ac;
+  padding: 10px;
+  border-radius: 20px;
 }
 
 #welcomeButtons button {

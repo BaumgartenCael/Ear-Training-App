@@ -182,7 +182,7 @@ function Chords() {
               {/* <AnswerButton answer = "Minor" onClick = {() => HandleGuess(note)} />
               <AnswerButton answer = "Diminished" onClick = {() => HandleGuess(note)} /> */}
             </div>
-          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5']
+          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5']
           .map((note) => (
             <AnswerButton 
               key = {note}

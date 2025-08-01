@@ -122,7 +122,7 @@ function Pitch() {
           <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
           <PlayAgain notes={[noteRef.current]} interval={false} chord={false} />
           <div className="answerChoices">
-          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5']
+          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5',]
           .map((note) => (
             <AnswerButton 
               key = {note}
