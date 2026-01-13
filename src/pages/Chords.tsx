@@ -12,8 +12,13 @@ const NUM_QUESTIONS = 6;
 function Chords() {
   type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
   const [correctChord, setCorrectChord] = useState<Note>();
+  const [guessedChord, setGuessedChord] = useState<Note>();
+  const [isMinorEnabled, setIsMinorEnabled] = useState<boolean>(false);
   const [isMinor, setIsMinor] = useState<boolean>(false);
+  const [minorGuessed, setMinorGuessed] = useState<boolean>(false);
+  const [isDiminishedEnabled, setIsDiminishedEnabled] = useState<boolean>(false);
   const [isDiminished, setIsDiminished] = useState<boolean>(false);
+  const [diminishedGuessed, setDiminishedGuessed] = useState<boolean>(false);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [firstGuess, setFirstGuess] =useState<boolean>(true);
@@ -86,11 +91,11 @@ function Chords() {
 
     // Adjust the chord tones to fit the parameters, go down an octave if needed
     // to prevent overflow of the array
-    if (diminished) {
+    if (isDiminishedEnabled && diminished) {
       thirdIndex -= 1
       fifthIndex -= 1;
     }
-    else if (minor) {thirdIndex -= 1;}
+    else if (isMinorEnabled && minor) {thirdIndex -= 1;}
     if (thirdIndex > all_notes.length - 1) {thirdIndex -= 12;}
     if (fifthIndex > all_notes.length - 1) {fifthIndex -= 12;}
 
@@ -103,6 +108,7 @@ function Chords() {
     chord.push(fifth as Note);
 
     console.log(chord);
+    console.log(correctChord);
     return chord;
   }
 
@@ -116,13 +122,32 @@ function Chords() {
     PlayChord(chordRef.current);
   }
 
+  function PushButton(func: () => void) {
 
-  function HandleGuess(guess: any, answer: any) {
-    console.log(guess);
-    if (guess === answer) {
+  }
+
+
+  function HandleGuess() {
+
+    // If we are specifying diminished chords and the guess is incorrect, they try again
+    console.log("Guessed chord: ", guessedChord)
+    if (isDiminishedEnabled && diminishedGuessed !== isDiminished) {
+      setFirstGuess(false);
+      console.log("Wrong diminished")
+      return
+    }
+
+    if (isMinorEnabled && minorGuessed !== isMinor) {
+      setFirstGuess(false);
+      console.log("Wrong minor")
+      return
+    }
+
+    if (guessedChord === correctChord) {
       GetRandomChord(all_notes);
       PlayChord(chordRef.current);
       setQuestionNumber(questionNumber+1);
+      setGuessedChord(undefined)
       if (firstGuess) {
         setNumCorrect(numCorrect+1);
       }
@@ -149,12 +174,12 @@ function Chords() {
       <>
       <h1>Chords</h1>
       <h2>How do you want to practice?</h2>
-      {/* <div id="toggle-container">
+      <div id="toggle-container">
         <OptionToggle isOn={multipleOctaves} text="Multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
-        <OptionToggle isOn={chord} text="Play notes simultaneously?" toggle={setChord}></OptionToggle>
-        <OptionToggle isOn={justAscending} text="Ascending notes?" toggle={setJustAscending}></OptionToggle>
-        <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle>
-      </div> */}
+        <OptionToggle isOn={isMinorEnabled} text="Consider minor and major?" toggle={setIsMinorEnabled}></OptionToggle>
+        <OptionToggle isOn={isDiminishedEnabled} text="Diminished chords?" toggle={setIsDiminishedEnabled}></OptionToggle>
+        {/* <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle> */}
+      </div>
       <button id="start-button" onClick={()=>Start()}>Let's go!</button>
         </>
     )
@@ -179,17 +204,18 @@ function Chords() {
           <PlayAgain notes={chordRef.current} interval={false} chord={true} />
           <div className="answerChoices">
             <div id="class-types">
-              {/* <AnswerButton answer = "Minor" onClick = {() => HandleGuess(note)} />
-              <AnswerButton answer = "Diminished" onClick = {() => HandleGuess(note)} /> */}
+              {isMinorEnabled && <AnswerButton answer = "Minor" onClick = {() => setMinorGuessed(!minorGuessed)} toggle ={true} />}
+              {isDiminishedEnabled && <AnswerButton answer = "Diminished" onClick = {() => setDiminishedGuessed(!diminishedGuessed)} toggle={true}/>}
             </div>
           {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5']
           .map((note) => (
-            <AnswerButton 
+            <button 
               key = {note}
-              answer = {noteString[note as Note]}
-              onClick = {() => HandleGuess(note, correctChord)}
-            />
+              onClick = {() => setGuessedChord(note as Note)}
+              className = {guessedChord === note? 'on': ''}
+            >{noteString[note as Note]}</button>
           ))}
+          <button id="submit-button" onClick={HandleGuess}></button>
         </div>
           </>
         )}
