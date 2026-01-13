@@ -1,4 +1,4 @@
-import './Intervals.css';
+import './Quiz.css';
 import ScoreDisplay from '.././components/ScoreDisplay';
 import NoteDisplay from '.././components/NoteDisplay';
 import AnswerButton from '../components/AnswerButton';
@@ -142,7 +142,7 @@ function Intervals() {
 
   return (
     <>  
-      <h1>Intervals</h1>
+      <h1 id="title">Intervals</h1>
         {questionNumber >= NUM_QUESTIONS ? (
           <>
             <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
@@ -155,17 +155,21 @@ function Intervals() {
           </>
         ) : (
           <>
-          <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
-          <PlayAgain notes={[noteRef1.current, noteRef2.current]} interval={!chord} chord={chord} />
-          <div className="answerChoices">
-          {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
-          .map((interval, index) => (
-            <AnswerButton 
-              key = {interval}
-              answer = {interval}
-              onClick = {() => HandleGuess(index+1)}
+          <div className="quiz-container">
+            <div className='progress-bar'>
+              <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+              <PlayAgain notes={[noteRef1.current, noteRef2.current]} interval={!chord} chord={chord} />
+            </div>
+            <div className="answerChoices">
+              {['m2', 'M2', 'm3', 'M3', 'P4', 'Tritone', 'P5', 'm6', 'M6', 'm7', 'M7', 'Octave']
+              .map((interval, index) => (
+                <AnswerButton 
+                  key = {interval}
+                  answer = {interval}
+                  onClick = {() => HandleGuess(index+1)}
             />
-          ))}
+            ))}
+          </div>
         </div>
           </>
         )}

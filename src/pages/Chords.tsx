@@ -1,4 +1,4 @@
-import './Intervals.css';
+import './Quiz.css';
 import ScoreDisplay from '../components/ScoreDisplay';
 import NoteDisplay from '../components/NoteDisplay';
 import AnswerButton from '../components/AnswerButton';
@@ -122,10 +122,6 @@ function Chords() {
     PlayChord(chordRef.current);
   }
 
-  function PushButton(func: () => void) {
-
-  }
-
 
   function HandleGuess() {
 
@@ -187,7 +183,7 @@ function Chords() {
 
   return (
     <>  
-      <h1>Chords</h1>
+      <h1 id="title">Chords</h1>
         {questionNumber >= NUM_QUESTIONS ? (
           <>
             <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
@@ -200,24 +196,30 @@ function Chords() {
           </>
         ) : (
           <>
-          <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
-          <PlayAgain notes={chordRef.current} interval={false} chord={true} />
-          <div className="answerChoices">
-            <div id="class-types">
-              {isMinorEnabled && <AnswerButton answer = "Minor" onClick = {() => setMinorGuessed(!minorGuessed)} toggle ={true} />}
-              {isDiminishedEnabled && <AnswerButton answer = "Diminished" onClick = {() => setDiminishedGuessed(!diminishedGuessed)} toggle={true}/>}
+          <div className="quiz-container">
+            <div className='progress-bar'>
+              <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+              <PlayAgain notes={chordRef.current} interval={false} chord={true} />
             </div>
-          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5']
-          .map((note) => (
-            <button 
-              key = {note}
-              onClick = {() => setGuessedChord(note as Note)}
-              className = {guessedChord === note? 'on': ''}
-            >{noteString[note as Note]}</button>
-          ))}
-          <button id="submit-button" onClick={HandleGuess}></button>
-        </div>
-          </>
+            <div className="chord-buttons">
+              <div id="class-types">
+                {isMinorEnabled && <AnswerButton answer = "Minor" onClick = {() => setMinorGuessed(!minorGuessed)} toggle ={true} />}
+                {isDiminishedEnabled && <AnswerButton answer = "Diminished" onClick = {() => setDiminishedGuessed(!diminishedGuessed)} toggle={true}/>}
+              </div>
+              <div className = "answerChoices">
+            {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5']
+            .map((note) => (
+              <button 
+                key = {note}
+                onClick = {() => setGuessedChord(note as Note)}
+                className = {guessedChord === note? 'on': ''}
+              >{noteString[note as Note]}</button>
+            ))}
+            <button id="submit-button" onClick={HandleGuess}>Submit</button>
+            </div>
+            </div>
+          </div>
+        </>
         )}
 
         {}

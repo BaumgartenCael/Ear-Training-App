@@ -9,7 +9,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ questionNumber, totalQuesti
     return (
         <div className="score-display-container">
             <h1>{questionNumber}</h1>
-            <div className="progress-bar">
+            <div className="progress">
                 <div className="progress-fill"
                      style={{ width: `${fillPercent}%` }}
                 />
