@@ -7,10 +7,11 @@ import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
 import { PlayOneNote, PlayTwoNotes, PlayChord } from '../lib/playNotes';
 import OptionToggle from '.././components/OptionToggle'
+import {all_notes, noteAudio} from '../types/note.ts'
+import type {Note} from '../types/note.ts'
 const NUM_QUESTIONS = 6;
 
 function Intervals() {
-  type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
   const [note1, setNote1] = useState<Note>('c/4');
   const [note2, setNote2] = useState<Note>('d/4');
   const [correctInterval, setCorrectInterval] = useState<number>();
@@ -27,22 +28,7 @@ function Intervals() {
   const noteRef1 = useRef<Note>('c/4');
   const noteRef2 = useRef<Note>('d/4');
 
-  const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
-  const noteAudio: Record<Note, string> = {
-    'c/4': '../.././public/sounds/piano_c4.wav',
-    'c#/4': '../.././public/sounds/piano_c4.wav',
-    'd/4': '../.././public/sounds/piano_d4.wav',
-    'd#/4': '../.././public/sounds/piano_c4.wav',
-    'e/4': '../.././public/sounds/piano_e4.wav',
-    'f/4': '../.././public/sounds/piano_f4.wav',
-    'f#/4': '../.././public/sounds/piano_c4.wav',
-    'g/4': '../.././public/sounds/piano_c4.wav',
-    'g#/4': '../.././public/sounds/piano_c4.wav',
-    'a/5': '../.././public/sounds/piano_c4.wav',
-    'a#/5': '../.././public/sounds/piano_c4.wav',
-    'b/5': '../.././public/sounds/piano_c4.wav',
-    'c/5': '../.././public/sounds/piano_c4.wav',
-  };
+  
 
   function GetRandomNotes(notes: Note[]) {
     // Create immutable list of all_notes, shuffle, then take the first two notes

@@ -7,10 +7,11 @@ import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
 import {  PlayChord } from '../lib/playNotes';
 import OptionToggle from '../components/OptionToggle'
+import {all_notes, noteAudio, noteString} from '../types/note.ts'
+import type {Note} from '../types/note.ts'
 const NUM_QUESTIONS = 6;
 
 function Chords() {
-  type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
   const [correctChord, setCorrectChord] = useState<Note>();
   const [guessedChord, setGuessedChord] = useState<Note>();
   const [isMinorEnabled, setIsMinorEnabled] = useState<boolean>(false);
@@ -28,38 +29,6 @@ function Chords() {
 
   const chordRef = useRef<Note[]>([]);
 
-  const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
-  const noteAudio: Record<Note, string> = {
-    'c/4': '../.././public/sounds/piano_c4.wav',
-    'c#/4': '../.././public/sounds/piano_c4.wav',
-    'd/4': '../.././public/sounds/piano_d4.wav',
-    'd#/4': '../.././public/sounds/piano_c4.wav',
-    'e/4': '../.././public/sounds/piano_e4.wav',
-    'f/4': '../.././public/sounds/piano_f4.wav',
-    'f#/4': '../.././public/sounds/piano_c4.wav',
-    'g/4': '../.././public/sounds/piano_c4.wav',
-    'g#/4': '../.././public/sounds/piano_c4.wav',
-    'a/5': '../.././public/sounds/piano_c4.wav',
-    'a#/5': '../.././public/sounds/piano_c4.wav',
-    'b/5': '../.././public/sounds/piano_c4.wav',
-    'c/5': '../.././public/sounds/piano_c4.wav',
-  };
-
-  const noteString: Record<Note, string> = {
-    'c/4': 'C',
-    'c#/4': 'C#',
-    'd/4': 'D',
-    'd#/4': 'D#',
-    'e/4': 'E',
-    'f/4': 'F',
-    'f#/4': 'F#',
-    'g/4': 'G',
-    'g#/4': 'G#',
-    'a/5': 'A',
-    'a#/5': 'A#',
-    'b/5': 'B',
-    'c/5': 'C',
-  };
 
   function GetRandomChord(notes: Note[]) {
     // Create immutable list of all_notes, shuffle, then take the first note. Build
@@ -143,7 +112,9 @@ function Chords() {
       GetRandomChord(all_notes);
       PlayChord(chordRef.current);
       setQuestionNumber(questionNumber+1);
-      setGuessedChord(undefined)
+      setGuessedChord(undefined);
+      setMinorGuessed(false);
+      setDiminishedGuessed(false);
       if (firstGuess) {
         setNumCorrect(numCorrect+1);
       }
@@ -203,12 +174,11 @@ function Chords() {
             </div>
             <div className="chord-buttons">
               <div id="class-types">
-                {isMinorEnabled && <AnswerButton answer = "Minor" onClick = {() => setMinorGuessed(!minorGuessed)} toggle ={true} />}
-                {isDiminishedEnabled && <AnswerButton answer = "Diminished" onClick = {() => setDiminishedGuessed(!diminishedGuessed)} toggle={true}/>}
+                {isMinorEnabled && <button onClick = {() => setMinorGuessed(!minorGuessed)} className = {minorGuessed? 'on': ''}>Minor</button>}
+                {isDiminishedEnabled && <button onClick = {() => setDiminishedGuessed(!diminishedGuessed)} className = {diminishedGuessed? 'on': ''}>Diminished</button>}
               </div>
               <div className = "answerChoices">
-            {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5']
-            .map((note) => (
+            {all_notes.map((note) => (
               <button 
                 key = {note}
                 onClick = {() => setGuessedChord(note as Note)}
