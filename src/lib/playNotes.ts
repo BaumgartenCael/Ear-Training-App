@@ -1,20 +1,5 @@
-export type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
-
-const noteAudio: Record<Note, string> = {
-    'c/4': '../.././public/sounds/piano_c4.wav',
-    'c#/4': '../.././public/sounds/piano_c4.wav',
-    'd/4': '../.././public/sounds/piano_d4.wav',
-    'd#/4': '../.././public/sounds/piano_c4.wav',
-    'e/4': '../.././public/sounds/piano_e4.wav',
-    'f/4': '../.././public/sounds/piano_f4.wav',
-    'f#/4': '../.././public/sounds/piano_c4.wav',
-    'g/4': '../.././public/sounds/piano_c4.wav',
-    'g#/4': '../.././public/sounds/piano_c4.wav',
-    'a/5': '../.././public/sounds/piano_c4.wav',
-    'a#/5': '../.././public/sounds/piano_c4.wav',
-    'b/5': '../.././public/sounds/piano_c4.wav',
-    'c/5': '../.././public/sounds/piano_c4.wav',
-  };
+import type {Note} from '../types/note.ts'
+import { all_notes, noteAudio, noteString} from '../types/note.ts'
   
 export async function PlayOneNote(note: Note) {
     let audio1 = new Audio(noteAudio[note]);

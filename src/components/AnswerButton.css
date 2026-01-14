@@ -13,3 +13,7 @@
 button:hover {
   background-color: #5726ac;
 }
+
+.answer-button .on {
+  background-color: red;
+}

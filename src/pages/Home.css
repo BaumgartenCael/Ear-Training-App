@@ -1,18 +1,32 @@
 #practice-buttons {
   display: flex;
-  gap: 90px;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 70px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  background-color:#5726ac;
+  border-radius: 20px;
+  padding: 10px;
 }
 
 #practice-buttons .navButton {
   background-color: #5d15d8;
-  width: 100px;
+  /* width: 300px; */
   border-radius: 20px;
   border: 1.5px none #ecedff;
 }
 
 #practice-buttons .navButton:hover {
   background-color: #5726ac;
+}
+
+.button-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-display p {
+  width: 140px;
 }

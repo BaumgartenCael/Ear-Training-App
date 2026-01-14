@@ -1,6 +1,7 @@
 import './PlayAgain.css';
 import { PlayOneNote, PlayTwoNotes, PlayChord } from "../lib/playNotes";
-import type { Note } from '../lib/playNotes';
+import type {Note} from '../types/note.ts'
+import { all_notes, noteAudio, noteString} from '../types/note.ts'
 
 interface PlayAgainProps {
     notes: Note[],

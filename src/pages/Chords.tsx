@@ -1,4 +1,4 @@
-import './Intervals.css';
+import './Quiz.css';
 import ScoreDisplay from '../components/ScoreDisplay';
 import NoteDisplay from '../components/NoteDisplay';
 import AnswerButton from '../components/AnswerButton';
@@ -7,13 +7,19 @@ import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
 import {  PlayChord } from '../lib/playNotes';
 import OptionToggle from '../components/OptionToggle'
+import {all_notes, noteAudio, noteString} from '../types/note.ts'
+import type {Note} from '../types/note.ts'
 const NUM_QUESTIONS = 6;
 
 function Chords() {
-  type Note = 'c/4' | 'c#/4' | 'd/4' | 'd#/4' | 'e/4' | 'f/4' | 'f#/4' | 'g/4'| 'g#/4' | 'a/5'| 'a#/5'| 'b/5' | 'c/5';
   const [correctChord, setCorrectChord] = useState<Note>();
+  const [guessedChord, setGuessedChord] = useState<Note>();
+  const [isMinorEnabled, setIsMinorEnabled] = useState<boolean>(false);
   const [isMinor, setIsMinor] = useState<boolean>(false);
+  const [minorGuessed, setMinorGuessed] = useState<boolean>(false);
+  const [isDiminishedEnabled, setIsDiminishedEnabled] = useState<boolean>(false);
   const [isDiminished, setIsDiminished] = useState<boolean>(false);
+  const [diminishedGuessed, setDiminishedGuessed] = useState<boolean>(false);
   const [questionNumber, setQuestionNumber] = useState<number>(0);
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [firstGuess, setFirstGuess] =useState<boolean>(true);
@@ -23,38 +29,6 @@ function Chords() {
 
   const chordRef = useRef<Note[]>([]);
 
-  const all_notes: Note[] = ['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5'];
-  const noteAudio: Record<Note, string> = {
-    'c/4': '../.././public/sounds/piano_c4.wav',
-    'c#/4': '../.././public/sounds/piano_c4.wav',
-    'd/4': '../.././public/sounds/piano_d4.wav',
-    'd#/4': '../.././public/sounds/piano_c4.wav',
-    'e/4': '../.././public/sounds/piano_e4.wav',
-    'f/4': '../.././public/sounds/piano_f4.wav',
-    'f#/4': '../.././public/sounds/piano_c4.wav',
-    'g/4': '../.././public/sounds/piano_c4.wav',
-    'g#/4': '../.././public/sounds/piano_c4.wav',
-    'a/5': '../.././public/sounds/piano_c4.wav',
-    'a#/5': '../.././public/sounds/piano_c4.wav',
-    'b/5': '../.././public/sounds/piano_c4.wav',
-    'c/5': '../.././public/sounds/piano_c4.wav',
-  };
-
-  const noteString: Record<Note, string> = {
-    'c/4': 'C',
-    'c#/4': 'C#',
-    'd/4': 'D',
-    'd#/4': 'D#',
-    'e/4': 'E',
-    'f/4': 'F',
-    'f#/4': 'F#',
-    'g/4': 'G',
-    'g#/4': 'G#',
-    'a/5': 'A',
-    'a#/5': 'A#',
-    'b/5': 'B',
-    'c/5': 'C',
-  };
 
   function GetRandomChord(notes: Note[]) {
     // Create immutable list of all_notes, shuffle, then take the first note. Build
@@ -86,11 +60,11 @@ function Chords() {
 
     // Adjust the chord tones to fit the parameters, go down an octave if needed
     // to prevent overflow of the array
-    if (diminished) {
+    if (isDiminishedEnabled && diminished) {
       thirdIndex -= 1
       fifthIndex -= 1;
     }
-    else if (minor) {thirdIndex -= 1;}
+    else if (isMinorEnabled && minor) {thirdIndex -= 1;}
     if (thirdIndex > all_notes.length - 1) {thirdIndex -= 12;}
     if (fifthIndex > all_notes.length - 1) {fifthIndex -= 12;}
 
@@ -103,6 +77,7 @@ function Chords() {
     chord.push(fifth as Note);
 
     console.log(chord);
+    console.log(correctChord);
     return chord;
   }
 
@@ -117,12 +92,29 @@ function Chords() {
   }
 
 
-  function HandleGuess(guess: any, answer: any) {
-    console.log(guess);
-    if (guess === answer) {
+  function HandleGuess() {
+
+    // If we are specifying diminished chords and the guess is incorrect, they try again
+    console.log("Guessed chord: ", guessedChord)
+    if (isDiminishedEnabled && diminishedGuessed !== isDiminished) {
+      setFirstGuess(false);
+      console.log("Wrong diminished")
+      return
+    }
+
+    if (isMinorEnabled && minorGuessed !== isMinor) {
+      setFirstGuess(false);
+      console.log("Wrong minor")
+      return
+    }
+
+    if (guessedChord === correctChord) {
       GetRandomChord(all_notes);
       PlayChord(chordRef.current);
       setQuestionNumber(questionNumber+1);
+      setGuessedChord(undefined);
+      setMinorGuessed(false);
+      setDiminishedGuessed(false);
       if (firstGuess) {
         setNumCorrect(numCorrect+1);
       }
@@ -149,12 +141,12 @@ function Chords() {
       <>
       <h1>Chords</h1>
       <h2>How do you want to practice?</h2>
-      {/* <div id="toggle-container">
+      <div id="toggle-container">
         <OptionToggle isOn={multipleOctaves} text="Multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
-        <OptionToggle isOn={chord} text="Play notes simultaneously?" toggle={setChord}></OptionToggle>
-        <OptionToggle isOn={justAscending} text="Ascending notes?" toggle={setJustAscending}></OptionToggle>
-        <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle>
-      </div> */}
+        <OptionToggle isOn={isMinorEnabled} text="Consider minor and major?" toggle={setIsMinorEnabled}></OptionToggle>
+        <OptionToggle isOn={isDiminishedEnabled} text="Diminished chords?" toggle={setIsDiminishedEnabled}></OptionToggle>
+        {/* <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle> */}
+      </div>
       <button id="start-button" onClick={()=>Start()}>Let's go!</button>
         </>
     )
@@ -162,7 +154,7 @@ function Chords() {
 
   return (
     <>  
-      <h1>Chords</h1>
+      <h1 id="title">Chords</h1>
         {questionNumber >= NUM_QUESTIONS ? (
           <>
             <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
@@ -175,23 +167,29 @@ function Chords() {
           </>
         ) : (
           <>
-          <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
-          <PlayAgain notes={chordRef.current} interval={false} chord={true} />
-          <div className="answerChoices">
-            <div id="class-types">
-              {/* <AnswerButton answer = "Minor" onClick = {() => HandleGuess(note)} />
-              <AnswerButton answer = "Diminished" onClick = {() => HandleGuess(note)} /> */}
+          <div className="quiz-container">
+            <div className='progress-bar'>
+              <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+              <PlayAgain notes={chordRef.current} interval={false} chord={true} />
             </div>
-          {['c/4', 'c#/4', 'd/4', 'd#/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/5', 'a#/5', 'b/5', 'c/5']
-          .map((note) => (
-            <AnswerButton 
-              key = {note}
-              answer = {noteString[note as Note]}
-              onClick = {() => HandleGuess(note, correctChord)}
-            />
-          ))}
-        </div>
-          </>
+            <div className="chord-buttons">
+              <div id="class-types">
+                {isMinorEnabled && <button onClick = {() => setMinorGuessed(!minorGuessed)} className = {minorGuessed? 'on': ''}>Minor</button>}
+                {isDiminishedEnabled && <button onClick = {() => setDiminishedGuessed(!diminishedGuessed)} className = {diminishedGuessed? 'on': ''}>Diminished</button>}
+              </div>
+              <div className = "answerChoices">
+            {all_notes.map((note) => (
+              <button 
+                key = {note}
+                onClick = {() => setGuessedChord(note as Note)}
+                className = {guessedChord === note? 'on': ''}
+              >{noteString[note as Note]}</button>
+            ))}
+            <button id="submit-button" onClick={HandleGuess}>Submit</button>
+            </div>
+            </div>
+          </div>
+        </>
         )}
 
         {}

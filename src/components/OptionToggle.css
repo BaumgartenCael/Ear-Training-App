@@ -2,13 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* position: fixed; */
+
   padding: 5px;
   gap: 10px;
   border: 2px solid black;
   border-radius: 20px;
   height: 35px;
-  width: 100%;
+  width: 90%;
   background-color: #c2b9ef;
   font: bold;
 }

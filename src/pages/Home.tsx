@@ -18,9 +18,18 @@ function Home() {
     <>
         <h1>Ear Training App</h1>
         <div id="practice-buttons">
-          <NavButton to="/intervals" label="Intervals" streak={streak}/>
-          <NavButton to="/chords" label="Chords" streak={streak}/>
-          <NavButton to="/pitch" label="Pitch" streak={streak}/>
+          <div className="button-display">
+            <p>Identify spaces between notes</p>
+            <NavButton to="/intervals" label="Intervals" streak={streak}/>
+          </div>
+          <div className="button-display">
+            <p>Identify chord tones, voicings, and inversions</p>
+            <NavButton to="/chords" label="Chords" streak={streak}/>
+          </div>
+          <div className="button-display">
+            <p>Identify notes by a single pitch</p>
+            <NavButton to="/pitch" label="Pitch" streak={streak}/>
+          </div>
         </div>
     </>
   )
