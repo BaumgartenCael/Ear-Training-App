@@ -45,7 +45,9 @@ function Pitch() {
     console.log(guess);
     if (guess === note) {
       GetRandomNote(all_notes);
-      PlayOneNote(noteRef.current);
+      if (questionNumber + 1 < NUM_QUESTIONS) {
+        PlayOneNote(noteRef.current);
+      }
       setQuestionNumber(questionNumber+1);
       if (firstGuess) {
         setNumCorrect(numCorrect+1);

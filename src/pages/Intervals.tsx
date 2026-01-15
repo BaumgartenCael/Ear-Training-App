@@ -87,7 +87,9 @@ function Intervals() {
     console.log(guess);
     if (guess === correctInterval) {
       GetRandomNotes(all_notes);
-      chord? PlayChord([noteRef1.current, noteRef2.current]) : PlayTwoNotes(noteRef1.current, noteRef2.current);
+      if (questionNumber + 1 < NUM_QUESTIONS) {
+        chord? PlayChord([noteRef1.current, noteRef2.current]) : PlayTwoNotes(noteRef1.current, noteRef2.current);
+      }
       setQuestionNumber(questionNumber+1);
       if (firstGuess) {
         setNumCorrect(numCorrect+1);

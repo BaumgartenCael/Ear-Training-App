@@ -110,8 +110,10 @@ function Chords() {
 
     if (guessedChord === correctChord) {
       GetRandomChord(all_notes);
-      PlayChord(chordRef.current);
       setQuestionNumber(questionNumber+1);
+      if (questionNumber + 1 < NUM_QUESTIONS) {
+        PlayChord(chordRef.current);
+      }
       setGuessedChord(undefined);
       setMinorGuessed(false);
       setDiminishedGuessed(false);
