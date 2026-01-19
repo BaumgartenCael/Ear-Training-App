@@ -49,8 +49,9 @@ function Chords() {
     // Randomly create the parameters of the chord
     let minor = (Math.random() > .5);
     let diminished = (Math.random() > .5);
-    let seven = (Math.random() > .5);
 
+    let seven = isSeventhsEnabled? Math.random() > .5: false;
+    
     // If this is a seven chord, determine what kind of seven
     let sevenType = null
     setIsMajorSeventh(false);
