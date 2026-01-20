@@ -1,0 +1,28 @@
+.feedback {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 100px;
+  width: 150px;
+  align-items: center;
+}
+
+button:hover {
+  background-color: #5726ac;
+}
+
+button {
+  height: 70px;
+  background-color: #5d15d8;
+  width: 100px;
+  border-radius: 20px;
+  border: 1.5px none #ecedff;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.off {
+  display: none;
+}

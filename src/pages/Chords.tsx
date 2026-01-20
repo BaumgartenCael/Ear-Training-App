@@ -2,6 +2,7 @@ import './Quiz.css';
 import ScoreDisplay from '../components/ScoreDisplay';
 import NoteDisplay from '../components/NoteDisplay';
 import AnswerButton from '../components/AnswerButton';
+import Feedback from '../components/Feedback';
 import PlayAgain from '../components/PlayAgain';
 import { useState, useRef, useEffect } from 'react';
 import { UpdateStreak } from '../lib/streak';
@@ -18,7 +19,7 @@ function Chords() {
   const [isMinor, setIsMinor] = useState<boolean>(false);
   const [isMajor, setIsMajor] = useState<boolean>(false);
   const [minorGuessed, setMinorGuessed] = useState<boolean>(false);
-  const [minorError, setMinorError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [majorGuessed, setMajorGuessed] = useState<boolean>(false);
   const [isDiminishedEnabled, setIsDiminishedEnabled] = useState<boolean>(false);
   const [isDiminished, setIsDiminished] = useState<boolean>(false);
@@ -93,6 +94,7 @@ function Chords() {
       thirdIndex -= 1
       fifthIndex -= 1;
     }
+
     else if (isMajorMinorEnabled && minor) {thirdIndex -= 1;}
     if (thirdIndex > all_notes.length - 1) {thirdIndex -= 12;}
     if (fifthIndex > all_notes.length - 1) {fifthIndex -= 12;}
@@ -153,25 +155,25 @@ function Chords() {
     console.log("Guessed chord: ", guessedChord)
     if (isDiminishedEnabled && diminishedGuessed !== isDiminished) {
       setFirstGuess(false);
-      console.log("Wrong diminished")
+      setErrorMessage('Does this chord have a flat fifth?');
       return
     }
 
     if (isMajorMinorEnabled && (minorGuessed !== isMinor || majorGuessed !== isMajor)) {
       setFirstGuess(false);
-      // setMinorError(true);
+      setErrorMessage('Is this a major or minor chord?');
       return
     }
 
     if (isSeventhsEnabled && (minorSeventhGuessed !== isMinorSeventh || majorSeventhGuessed !== isMajorSeventh)) {
       setFirstGuess(false);
-      // setMinorError(true);
+      setErrorMessage('Is this a seventh chord? If so, what kind of seventh?');
       return
     }
 
     if (identifyPitch && guessedChord !== correctChord) {
       setFirstGuess(false);
-      console.log("wrong pitch")
+      setErrorMessage("You're almost there, but your pitch is off.")
       return
     }
 
@@ -224,7 +226,6 @@ function Chords() {
   return (
     <>  
       <h1 id="title">Chords</h1>
-      {minorError && <h2 id="error-message">Incorrect</h2>}
         {questionNumber >= NUM_QUESTIONS ? (
           <>
             <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
@@ -237,6 +238,7 @@ function Chords() {
           </>
         ) : (
           <>
+          {firstGuess === false && <Feedback message={errorMessage} correct={false}/>}
           <div className="quiz-container">
             <div className='progress-bar'>
               <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
