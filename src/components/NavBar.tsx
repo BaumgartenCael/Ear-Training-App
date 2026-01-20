@@ -3,14 +3,14 @@ import './NavBar.css'
 
 const NavBar: React.FC = ({}) => {
     return (
-        <nav id="navbar-container">
-            <div id = "header-title">
-                <h2>Ear Training App</h2>
+        <nav className="navbar-container">
+            <NavButton to="/home" label="Ear Trainers"/>
+            <NavButton to="/home" label="Extra"/>
+            <NavButton to="/home" label="Extra"/>
+            <div id="sign-out">
+                <NavButton to="/home" label="Account"/>
+                <NavButton to="/" label="Sign Out"/>
             </div>
-            <NavButton to="/" label="Sign Out"/>
-            <NavButton to="/home" label="Home"/>
-            <NavButton to="/home" label="Extra"/>
-            <NavButton to="/home" label="Extra"/>
         </nav>
     );
 }
