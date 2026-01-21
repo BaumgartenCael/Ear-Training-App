@@ -29,10 +29,32 @@ export async function GetStreak(): Promise<number | undefined> {
             return data.streak;
         }
         else {
+            // console.log("Failed");
+        }
+    } catch (error) {
+        // console.log("Failed to fetch streak");
+        console.error(error);
+    }
+}
+
+export async function GetUsername(): Promise<string | undefined> {
+    try {
+        console.log("Here comes the username!");
+        const res = await fetch('http://localhost:5000/api/getUsername', {
+            credentials: 'include',
+        });
+
+        if (res.ok) {
+            console.log("Retrieved username");
+            console.log(res.body);
+            const data = await res.json();
+            return data.username;
+        }
+        else {
             console.log("Failed");
         }
     } catch (error) {
-        console.log("Failed to fetch streak");
+        console.log("Failed to fetch username");
         console.error(error);
     }
 }

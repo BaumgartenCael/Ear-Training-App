@@ -6,9 +6,10 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  background-color:#5726ac;
+  /* background-color:#5726ac; */
   border-radius: 20px;
   padding: 10px;
+  display: none;
 }
 
 #practice-buttons .navButton {
@@ -16,6 +17,7 @@
   /* width: 300px; */
   border-radius: 20px;
   border: 1.5px none #ecedff;
+  display: none;
 }
 
 #practice-buttons .navButton:hover {
@@ -29,4 +31,14 @@
 
 .button-display p {
   width: 140px;
+}
+
+.practice-cards {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: top;
+  width: 100%;
+  gap: 70px;
+  top: 35%;
 }
