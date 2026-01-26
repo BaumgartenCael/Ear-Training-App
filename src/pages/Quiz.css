@@ -125,8 +125,10 @@
 #toggle-container {
   display: flex;
   flex-direction: column;
+  width: 600px;
   gap: 10px;
-  background-color: #5726ac;
+  background-color: #c2b9ef;
+  border: 5px solid #5726ac;
   padding: 5px;
   border-radius: 20px;
   align-items: center;

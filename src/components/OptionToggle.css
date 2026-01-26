@@ -7,13 +7,13 @@
   gap: 10px;
   border: 2px solid black;
   border-radius: 20px;
-  height: 35px;
+  min-height: 35px;
   width: 90%;
-  background-color: #c2b9ef;
+  background-color: #5726ac;
   font: bold;
 }
 
-.option-toggle p {
+.option-toggle h3 {
   justify-self: center;
   text-align: center;
   width: 100%;
@@ -21,16 +21,23 @@
 
 #toggle-button {
   background-color: transparent;
-  border-radius: 100%;
-  width: 20px;
-  height: 20px;
+  background-color: #c2b9ef;
+  border-radius: 15px;
+  width: 50px;
+  height: 50px;
+  transform: translateX(15px);
   border: 1px solid black;
 }
 
 #toggle-button:hover {
-  background-color: #a9a1d2;
+  background-color: #7f5cbc;
 }
 
 #toggle-button.on {
   background-color: green;
+  background-color: #5d15d8;
+}
+
+#toggle-button:hover {
+  background-color: #7f5cbc;
 }

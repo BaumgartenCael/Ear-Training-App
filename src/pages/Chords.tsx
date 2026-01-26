@@ -209,13 +209,14 @@ function Chords() {
     return (
       <>
       <h1>Chords</h1>
-      <h2>How do you want to practice?</h2>
+      <h2>How would you like to practice?</h2>
+      {/* <p>Each item you select will add another layer of specificity required to correctly identify the chord.</p> */}
       <div id="toggle-container">
-        <OptionToggle isOn={multipleOctaves} text="Multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
-        <OptionToggle isOn={identifyPitch} text="Identify pitch?" toggle={setIdentifyPitch}></OptionToggle>
-        <OptionToggle isOn={isMajorMinorEnabled} text="Consider minor and major?" toggle={setIsMajorMinorEnabled}></OptionToggle>
-        <OptionToggle isOn={isDiminishedEnabled} text="Diminished chords?" toggle={setIsDiminishedEnabled}></OptionToggle>
-        <OptionToggle isOn={isSeventhsEnabled} text="Seventh chords?" toggle={setIsSeventhsEnabled}></OptionToggle>
+        <OptionToggle isOn={multipleOctaves} text="Chords stretch across multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
+        <OptionToggle isOn={identifyPitch} text="Identify the pitch of the chord?" toggle={setIdentifyPitch}></OptionToggle>
+        <OptionToggle isOn={isMajorMinorEnabled} text="Differentiate major and minor chords?" toggle={setIsMajorMinorEnabled}></OptionToggle>
+        <OptionToggle isOn={isDiminishedEnabled} text="Identify diminished chords?" toggle={setIsDiminishedEnabled}></OptionToggle>
+        <OptionToggle isOn={isSeventhsEnabled} text="Identify seventh chords?" toggle={setIsSeventhsEnabled}></OptionToggle>
         {/* <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle> */}
       </div>
       <button id="start-button" onClick={()=>Start()}>Let's go!</button>
@@ -239,6 +240,7 @@ function Chords() {
         ) : (
           <>
           {firstGuess === false && <Feedback message={errorMessage} correct={false}/>}
+          <button onClick={() => setStarted(false)}>Edit practice</button>
           <div className="quiz-container">
             <div className='progress-bar'>
               <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />

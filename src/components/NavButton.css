@@ -6,6 +6,7 @@
   font-weight: 500;
   font-family: inherit;
   background-color: #c2b9ef;
+  background-image: url("header_background.png");
   cursor: pointer;
   /* transition: border-color 0.25s; */
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);

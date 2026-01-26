@@ -11,7 +11,9 @@
     transform: translateX(-50%);
     border: 2px solid black;
     font-size: 13px;
-    background-color:#5726ac;
+    background-color: #5726ac;
+    background-image: url("../.././public/images/header_background.png");
+    background-size: contain;
 }
 
 .navbar-container .navButton {
