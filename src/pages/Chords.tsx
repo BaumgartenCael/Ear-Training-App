@@ -199,7 +199,7 @@ function Chords() {
     setFirstGuess(true);
     if (questionNumber === NUM_QUESTIONS && shouldUpdate) {
       console.log("Should update!");
-      UpdateStreak();
+      UpdateStreak('chord');
       setShouldUpdate(false);
     }
   }, [questionNumber, shouldUpdate, multipleOctaves]);

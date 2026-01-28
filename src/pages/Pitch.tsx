@@ -63,7 +63,7 @@ function Pitch() {
     setFirstGuess(true);
     if (questionNumber === NUM_QUESTIONS && shouldUpdate) {
       console.log("Should update!");
-      UpdateStreak();
+      UpdateStreak('pitch');
       setShouldUpdate(false);
     }
   }, [questionNumber, shouldUpdate]);

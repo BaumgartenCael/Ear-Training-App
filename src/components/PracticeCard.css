@@ -61,3 +61,11 @@
 #card-title {
   top: 50px;
 }
+
+#streak {
+  font-size: xx-large;
+}
+
+#bottom-chunk {
+  text-align: center;
+}

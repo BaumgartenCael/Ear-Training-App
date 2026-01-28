@@ -17,7 +17,7 @@ router.post('/signup', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword, streak: 0 });
+        const newUser = new User({ username, password: hashedPassword });
 
         await newUser.save();
         res.status(201).json({message: "User created successfully!"});
@@ -58,11 +58,13 @@ router.post('/login', async (req, res) => {
 
 router.post('/updateStreak', async (req, res) => {
     try {
+        const {type} = req.body
         console.log("Session: ", req.session);
         console.log("Session id", req.session.userId);
+        const field = `streaks.${type}`
         await User.updateOne(
         {_id: req.session.userId },
-        {$inc: {streak: 1}},)
+        {$inc: { [field]: 1}},)
         res.status(200).json({message: 'Streak updated successfully'});
         }
     catch (error) {
@@ -73,12 +75,14 @@ router.post('/updateStreak', async (req, res) => {
 
 router.get('/getStreak', async (req, res) => {
     try {
-        // console.log("Attempting to get streak: ", req.session.userId);
+        console.log("Attempting to get streak: ");
         const currentUser = await User.findOne({_id: req.session.userId});
         if (!currentUser) {
             return res.status(404).json({ message: "User not found." });
         }
-        res.json({streak: currentUser.streak});
+        const {type} = req.query;
+        console.log("Type: ", type)
+        res.json({streak: currentUser.streaks[type]});
     }
     catch (error) {
         console.error(error);
