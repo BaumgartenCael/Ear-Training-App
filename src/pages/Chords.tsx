@@ -4,7 +4,7 @@ import NoteDisplay from '../components/NoteDisplay';
 import AnswerButton from '../components/AnswerButton';
 import Feedback from '../components/Feedback';
 import PlayAgain from '../components/PlayAgain';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useReducer } from 'react';
 import { UpdateStreak } from '../lib/streak';
 import {  PlayChord } from '../lib/playNotes';
 import OptionToggle from '../components/OptionToggle'
@@ -13,73 +13,250 @@ import type {Note} from '../types/note.ts'
 const NUM_QUESTIONS = 6;
 
 function Chords() {
-  const [correctChord, setCorrectChord] = useState<Note>();
-  const [guessedChord, setGuessedChord] = useState<Note>();
-  const [isMajorMinorEnabled, setIsMajorMinorEnabled] = useState<boolean>(false);
-  const [isMinor, setIsMinor] = useState<boolean>(false);
-  const [isMajor, setIsMajor] = useState<boolean>(false);
-  const [minorGuessed, setMinorGuessed] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [majorGuessed, setMajorGuessed] = useState<boolean>(false);
-  const [isDiminishedEnabled, setIsDiminishedEnabled] = useState<boolean>(false);
-  const [isDiminished, setIsDiminished] = useState<boolean>(false);
-  const [isSeventhsEnabled, setIsSeventhsEnabled] = useState<boolean>(false);
-  const [isMinorSeventh, setIsMinorSeventh] = useState<boolean>(false);
-  const [minorSeventhGuessed, setMinorSeventhGuessed] = useState<boolean>(false);
-  const [majorSeventhGuessed, setMajorSeventhGuessed] = useState<boolean>(false);
-  const [isMajorSeventh, setIsMajorSeventh] = useState<boolean>(false);
-  const [diminishedGuessed, setDiminishedGuessed] = useState<boolean>(false);
-  const [questionNumber, setQuestionNumber] = useState<number>(0);
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [firstGuess, setFirstGuess] =useState<boolean>(true);
-  const [started, setStarted] = useState<boolean>(false);
-  const [shouldUpdate, setShouldUpdate] = useState<boolean>(true);
-  const [multipleOctaves, setMultipleOctaves] = useState<boolean>(false);
-  const [identifyPitch, setIdentifyPitch] = useState<boolean>(false);
 
+  //
+  //// INITIALIZING USEREDUCERS
+  //
+
+
+  // Initializing reducer function for controlling the general state of the page
+  interface systemState {
+      questionNumber: number, 
+      numCorrect: number,
+      firstGuess: boolean,
+      started: boolean,
+      shouldUpdate: boolean,
+      errorMessage: string
+    }
+
+  interface systemActions {
+    type: "start" | "wrongGuess" | "nextQuestion" | "reset" 
+    correct?: boolean | null
+    data?: any
+  }
+
+
+  function systemReducer(state: systemState, action: systemActions) {
+    const {type} = action;
+    switch (type) {
+        case "nextQuestion":
+          return {
+            ...state,
+            questionNumber: state.questionNumber + 1,
+            numCorrect: state.firstGuess? state.numCorrect + 1: state.numCorrect,
+            firstGuess: true,
+          }
+        
+        case "start":
+          return {
+            ...state,
+            started: true,
+            questionNumber: 0,
+            numCorrect: 0,
+            firstGuess: true
+          }
+        
+        case "wrongGuess":
+          return {...state, 
+            firstGuess: false,
+            errorMessage: action.data
+          }
+        
+        case "reset":
+          return {...state,
+            started: false
+          }
+      default:
+        return state
+    }
+  }
+
+  const [system, systemDispatch] = useReducer(systemReducer, {
+    questionNumber: 0, 
+    numCorrect: 0,
+    firstGuess: true,
+    started: false,
+    shouldUpdate: false,
+    errorMessage: "",
+  })
+
+  // Initialize the reducer for tracking the details of the generated chord
+  interface chordState  {
+      isMajorMinorEnabled: boolean,
+      isDiminishedEnabled: boolean,
+      isSeventhsEnabled: boolean,
+      isPitchEnabled: boolean,
+      correctPitch: Note | null,
+      isMinor: boolean,
+      isMajor: boolean,
+      isDiminished: boolean,
+      correctSeventh: "minor" | "major" | null,
+    }
+
+  interface chordActions {
+      param: "pitch" | "minor" | "major" | "diminished" | "seventh" | "reset"
+      type: "enable" | "set" 
+      data?: any
+    }
+  
+  function chordReducer(state: chordState, action: chordActions) {
+      const {param, type} = action;
+      switch (type) {
+        
+        // Switch between enabling parameters and applying them to the chord
+        case "enable":
+
+          switch (param) {
+            case "pitch": 
+              return{...state, isPitchEnabled: action.data};
+            
+            case "minor": 
+              return{...state, isMajorMinorEnabled: action.data}
+            
+            case "major":
+              return{...state, isMajorMinorEnabled: action.data}
+            
+            case "diminished": 
+              return{...state, isDiminishedEnabled: action.data}
+            
+            case "seventh": 
+              return{...state, isSeventhsEnabled: action.data}
+          }
+
+        case "set":
+
+          switch (param) {
+            case "pitch":
+              return state.isPitchEnabled? {...state, correctPitch: action.data}: state;
+            
+            case "minor":
+              return state.isMajorMinorEnabled? {...state, isMinor: action.data}: state;
+              
+            case "major":
+              return state.isMajorMinorEnabled? {...state, isMajor: action.data}: state;
+                
+            case "diminished":
+              return state.isDiminishedEnabled? {...state, isDiminished: action.data}: state;
+            
+            case "seventh":
+              return state.isSeventhsEnabled? {...state, correctSeventh: action.data}: state;
+                
+            
+            case "reset":
+              return {
+                ...state,
+                correctPitch: null,
+                isMinor: false,
+                isMajor: false,
+                isDiminished: false,
+                correctSeventh: null
+              }
+          }
+
+        default: 
+          return state;
+      }
+    }
+
+  const [chord, chordDispatch] = useReducer(chordReducer, {
+      isMajorMinorEnabled: false,
+      isDiminishedEnabled: false,
+      isSeventhsEnabled: false,
+      isPitchEnabled: false,
+      correctPitch: null,
+      isMinor: false,
+      isMajor: false,
+      isDiminished: false,
+      correctSeventh: null,
+    })
+
+  // Initialize the reducer for guessing different details of the chord
+  interface guessState {
+      pitch: Note | null,
+      minor: boolean,
+      major: boolean,
+      diminished: boolean,
+      seventh: "minor" | "major" | null,
+    }
+
+  interface guessActions {
+      type: "pitch" | "minor" | "major" | "diminished" | "seventh" | "reset"
+      data: any
+    }
+  
+  function guessReducer(state: guessState, action: guessActions) {
+      const {type} = action;
+      switch (type) {
+        case "reset":
+          return {
+            ...state,
+            pitch: null,
+            minor: false,
+            major: false,
+            diminished: false,
+            seventh: null,
+          }
+        case "pitch":
+          return {...state, pitch: action.data};
+
+        case "minor":
+          return {...state, minor: action.data};
+           
+        case "major":
+          return {...state, major: action.data};
+            
+        case "diminished":
+          return {...state, diminished: action.data};
+        
+        case "seventh":
+          return {...state, seventh: action.data}
+            
+        default:
+          return state;
+      }
+  }
+  const [guess, guessDispatch] = useReducer(guessReducer, {
+    pitch: null,
+    minor: false,
+    major: false,
+    diminished: false,
+    seventh: null,
+  })
   const chordRef = useRef<Note[]>([]);
 
 
   function GetRandomChord(notes: Note[]) {
+
     // Create immutable list of all_notes, shuffle, then take the first note. Build
     // the chord with this note as the tonic
     let shuffledNotes = [...notes].sort(() => Math.random() - 0.5);
     const newNote = shuffledNotes[0];
-    setCorrectChord(newNote);
+    chordDispatch({param: "pitch", type: "set", data: newNote});
 
     // Randomly create the parameters of the chord
     let minor = (Math.random() > .5);
     let diminished = (Math.random() > .5);
-
-    let seven = isSeventhsEnabled? Math.random() > .5: false;
+    let seven = Math.random() > .5;
     
     // If this is a seven chord, determine what kind of seven
     let sevenType = null
-    setIsMajorSeventh(false);
-    setIsMinorSeventh(false);
+    console.log("Seven detector status: ", seven)
     if (seven) {
       console.log("Seven detected!")
       sevenType = (Math.random() > .5? -1: 1);
-      if (sevenType === 1) {
-        console.log(" This is a major seven chord")
-        setIsMajorSeventh(true);
-      }
-      if (sevenType === -1) {
-        console.log("This is a minor seven chord")
-        setIsMinorSeventh(true);
-      }
+      chordDispatch({param: "seventh", type: "set", data: sevenType === -1? "minor": "major"})
     }
 
     
-    setIsMinor(minor);
-    setIsMajor(!minor);
-    setIsDiminished(diminished);
+    chordDispatch({param: "major", type: "set", data: !minor})
+    chordDispatch({param: "minor", type: "set", data: minor})
+    chordDispatch({param: "diminished", type: "set", data: diminished})
     const newChord = BuildChord(newNote, minor, diminished, sevenType);
     chordRef.current = newChord;
   }
 
   function BuildChord(tonic: Note, minor: boolean, diminished: boolean, seven: number | null) {
-    let chord: Note[] = [];
+    let newChord: Note[] = [];
 
     // Build a basic major chord first, find the indexes of each chord tone: 
     // the third four half steps above the tonic and the fifth seven above
@@ -90,12 +267,12 @@ function Chords() {
 
     // Adjust the chord tones to fit the parameters, go down an octave if needed
     // to prevent overflow of the array
-    if (isDiminishedEnabled && diminished) {
-      thirdIndex -= 1
+    if (chord.isDiminishedEnabled && diminished) {
+      // thirdIndex -= 1
       fifthIndex -= 1;
     }
 
-    else if (isMajorMinorEnabled && minor) {thirdIndex -= 1;}
+    if (chord.isMajorMinorEnabled && minor) {thirdIndex -= 1;}
     if (thirdIndex > all_notes.length - 1) {thirdIndex -= 12;}
     if (fifthIndex > all_notes.length - 1) {fifthIndex -= 12;}
 
@@ -104,12 +281,12 @@ function Chords() {
     const third = all_notes[thirdIndex];
     const fifth = all_notes[fifthIndex];
 
-    chord.push(root as Note);
-    chord.push(third as Note);
-    chord.push(fifth as Note);
+    newChord.push(root as Note);
+    newChord.push(third as Note);
+    newChord.push(fifth as Note);
 
     // add the seventh randomly if parameters request
-    if (seven === 1 || seven === -1) {
+    if (seven) {
       console.log("This should pop up when seventh is present")
       let seventhIndex = tonicIndex
       if (seven === 1) {
@@ -119,104 +296,87 @@ function Chords() {
         seventhIndex += 10;
       }
       if (seventhIndex > all_notes.length - 1) {seventhIndex -= 12;}
-      chord.push(all_notes[seventhIndex])
+      newChord.push(all_notes[seventhIndex])
       console.log("Seventh: ", all_notes[seventhIndex])
     }
 
-    console.log('Chord with maybe seventh!: ', chord);
-    console.log(correctChord);
-    return chord;
+    console.log('Chord with maybe seventh!: ', newChord);
+    return newChord;
   }
 
 
   // Helper function to reset everything/begin another practice
   function Start() {
-    setQuestionNumber(0);
-    setStarted(true);
-    setNumCorrect(0);
+    chordDispatch({param: "reset", type: "set"})
+    systemDispatch({type: "start"});
     GetRandomChord(all_notes);
     PlayChord(chordRef.current);
   }
 
   // Helper function to reset all necessary states when moving to another question
-  function Reset() {
-    setGuessedChord(undefined);
-    setMinorGuessed(false);
-    setMajorGuessed(false);
-    setDiminishedGuessed(false);
-    setMinorSeventhGuessed(false);
-    setMajorSeventhGuessed(false);
-  }
-
 
   function HandleGuess() {
 
     // If we are specifying diminished chords and the guess is incorrect, they try again
-    console.log("Guessed chord: ", guessedChord)
-    if (isDiminishedEnabled && diminishedGuessed !== isDiminished) {
-      setFirstGuess(false);
-      setErrorMessage('Does this chord have a flat fifth?');
+    if (chord.isDiminishedEnabled && guess.diminished !== chord.isDiminished) {
+      systemDispatch({type: "wrongGuess", data: 'Does this chord have a flat fifth?'})
       return
     }
 
-    if (isMajorMinorEnabled && (minorGuessed !== isMinor || majorGuessed !== isMajor)) {
-      setFirstGuess(false);
-      setErrorMessage('Is this a major or minor chord?');
+    if (chord.isMajorMinorEnabled && (guess.minor !== chord.isMinor || guess.major !== chord.isMajor)) {
+      systemDispatch({type: "wrongGuess", data: 'Is this a major or minor chord?'})
       return
     }
 
-    if (isSeventhsEnabled && (minorSeventhGuessed !== isMinorSeventh || majorSeventhGuessed !== isMajorSeventh)) {
-      setFirstGuess(false);
-      setErrorMessage('Is this a seventh chord? If so, what kind of seventh?');
+    if (chord.isSeventhsEnabled && (guess.seventh !== chord.correctSeventh)) {
+      systemDispatch({type: "wrongGuess", data: 'Is this a seventh chord? If so, what kind of seventh?'})
       return
     }
 
-    if (identifyPitch && guessedChord !== correctChord) {
-      setFirstGuess(false);
-      setErrorMessage("You're almost there, but your pitch is off.")
+    if (chord.isPitchEnabled && guess.pitch !== chord.correctPitch) {
+      systemDispatch({type: "wrongGuess", data: "You're almost there, but your pitch is off."})
       return
     }
+
+    chordDispatch({param: "reset", type: "set"})
+    guessDispatch({type: "reset", data: null})
 
     GetRandomChord(all_notes);
-    setQuestionNumber(questionNumber+1);
-    if (questionNumber + 1 < NUM_QUESTIONS) {
+    systemDispatch({type: "nextQuestion"})
+    if (system.questionNumber + 1 < NUM_QUESTIONS) {
       PlayChord(chordRef.current);
     }
-    setGuessedChord(undefined);
-    Reset();
-    if (firstGuess) {
-      setNumCorrect(numCorrect+1);
-    }
+
     
-    else {
-      setFirstGuess(false);
-    }
   }
 
 
-  useEffect(() => {
-    console.log("Button pressed!", multipleOctaves);
-    setFirstGuess(true);
-    if (questionNumber === NUM_QUESTIONS && shouldUpdate) {
-      console.log("Should update!");
-      UpdateStreak('chord');
-      setShouldUpdate(false);
-    }
-  }, [questionNumber, shouldUpdate, multipleOctaves]);
+  // useEffect(() => {
+  //   setFirstGuess(true);
+  //   if (questionNumber === NUM_QUESTIONS && shouldUpdate) {
+  //     console.log("Should update!");
+  //     UpdateStreak('chord');
+  //     setShouldUpdate(false);
+  //   }
+  // }, [questionNumber, shouldUpdate, multipleOctaves]);
 
   // Return a start button by default, display everything else when clicked
-  if (!started) {
+  if (!system.started) {
     return (
       <>
       <h1>Chords</h1>
       <h2>How would you like to practice?</h2>
       {/* <p>Each item you select will add another layer of specificity required to correctly identify the chord.</p> */}
       <div id="toggle-container">
-        <OptionToggle isOn={multipleOctaves} text="Chords stretch across multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
-        <OptionToggle isOn={identifyPitch} text="Identify the pitch of the chord?" toggle={setIdentifyPitch}></OptionToggle>
+        <button onClick={() => chordDispatch({param: "pitch", type: "enable", data: !chord.isPitchEnabled})}>Identify the pitch of the chord?</button>
+        <button onClick={() => chordDispatch({param: "minor", type: "enable", data: !chord.isMajorMinorEnabled})}>Differentiate major and minor chords?</button>
+        <button onClick={() => chordDispatch({param: "diminished", type: "enable", data: !chord.isDiminishedEnabled})}>Identify diminished chords?</button>
+        <button onClick={() => chordDispatch({param: "seventh", type: "enable", data: !chord.isSeventhsEnabled})}>Identify seventh chords?</button>
+        {/* <OptionToggle isOn={multipleOctaves} text="Chords stretch across multiple octaves?" toggle={setMultipleOctaves}></OptionToggle>
+        <OptionToggle isOn={isPitchEnabled} text="Identify the pitch of the chord?" toggle={setIsPitchEnabled}></OptionToggle>
         <OptionToggle isOn={isMajorMinorEnabled} text="Differentiate major and minor chords?" toggle={setIsMajorMinorEnabled}></OptionToggle>
         <OptionToggle isOn={isDiminishedEnabled} text="Identify diminished chords?" toggle={setIsDiminishedEnabled}></OptionToggle>
-        <OptionToggle isOn={isSeventhsEnabled} text="Identify seventh chords?" toggle={setIsSeventhsEnabled}></OptionToggle>
+        <OptionToggle isOn={isSeventhsEnabled} text="Identify seventh chords?" toggle={setIsSeventhsEnabled}></OptionToggle> */}
         {/* <OptionToggle isOn={justDescending} text="Descending notes?" toggle={setJustDescending}></OptionToggle> */}
       </div>
       <button id="start-button" onClick={()=>Start()}>Let's go!</button>
@@ -227,9 +387,9 @@ function Chords() {
   return (
     <>  
       <h1 id="title">Chords</h1>
-        {questionNumber >= NUM_QUESTIONS ? (
+        {system.questionNumber >= NUM_QUESTIONS ? (
           <>
-            <h2>You got {numCorrect}/{NUM_QUESTIONS}!</h2>
+            <h2>You got {system.numCorrect}/{NUM_QUESTIONS}!</h2>
             <button onClick={() => {
               Start();
             }}>Practice more melodies?</button>
@@ -239,33 +399,33 @@ function Chords() {
           </>
         ) : (
           <>
-          {firstGuess === false && <Feedback message={errorMessage} correct={false}/>}
-          <button onClick={() => setStarted(false)}>Edit practice</button>
+          {system.firstGuess === false && <Feedback message={system.errorMessage} correct={false}/>}
+          <button onClick={() => systemDispatch({type: "reset"})}>Edit practice</button>
           <div className="quiz-container">
             <div className='progress-bar'>
-              <ScoreDisplay questionNumber={questionNumber} totalQuestions={NUM_QUESTIONS} />
+              <ScoreDisplay questionNumber={system.questionNumber} totalQuestions={NUM_QUESTIONS} />
               <PlayAgain notes={chordRef.current} interval={false} chord={true} />
             </div>
             <div className="chord-buttons">
               <div id="class-types">
-                {isMajorMinorEnabled && 
+                {chord.isMajorMinorEnabled && 
                 <>
-                <button onClick = {() => setMinorGuessed(!minorGuessed)} className = {minorGuessed? 'on': ''}>Minor</button>
-                <button onClick = {() => setMajorGuessed(!majorGuessed)} className = {majorGuessed? 'on': ''}>Major</button>
+                <button onClick = {() => guessDispatch({type: "minor", data: !guess.minor})} className = {guess.minor? 'on': ''}>Minor</button>
+                <button onClick = {() => guessDispatch({type: "major", data: !guess.major})} className = {guess.major? 'on': ''}>Major</button>
                 </>}
-                {isDiminishedEnabled && <button onClick = {() => setDiminishedGuessed(!diminishedGuessed)} className = {diminishedGuessed? 'on': ''}>b5</button>}
-                {isSeventhsEnabled && 
+                {chord.isDiminishedEnabled && <button onClick = {() => guessDispatch({type: "diminished", data: !guess.diminished})} className = {guess.diminished? 'on': ''}>b5</button>}
+                {chord.isSeventhsEnabled && 
                 <>
-                <button onClick = {() => setMinorSeventhGuessed(!minorSeventhGuessed)} className = {minorSeventhGuessed? 'on': ''}>m7</button>
-                <button onClick = {() => setMajorSeventhGuessed(!majorSeventhGuessed)} className = {majorSeventhGuessed? 'on': ''}>M7</button>
+                <button onClick = {() => guessDispatch({type: "seventh", data: guess.seventh === "minor"? null: "minor"})} className = {(guess.seventh === "minor")? 'on': ''}>m7</button>
+                <button onClick = {() => guessDispatch({type: "seventh", data: guess.seventh === "major"? null: "major"})} className = {(guess.seventh === "major")? 'on': ''}>M7</button>
                 </>}
               </div>
               <div className = "answerChoices">
-            {identifyPitch && all_notes.map((note) => (
+            {chord.isPitchEnabled && all_notes.map((note) => (
               <button 
                 key = {note}
-                onClick = {() => setGuessedChord(note as Note)}
-                className = {guessedChord === note? 'on': ''}
+                onClick = {() => guessDispatch({type: "pitch", data: note as Note})}
+                className = {guess.pitch === note? 'on': ''}
               >{noteString[note as Note]}</button>
             ))}
             <button id="submit-button" onClick={HandleGuess}>Submit</button>
